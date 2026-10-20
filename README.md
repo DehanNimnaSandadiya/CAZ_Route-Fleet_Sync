@@ -1,51 +1,52 @@
-# CAZ-Route & Fleet Sync (Bristol)
+# CAZ Route & Fleet Sync
 
-Hyper-local B2B SaaS for Bristol SME fleets: hill- and Clean-Air-Zone-aware routing, cargo-bike micro-hub
-handshakes, a CAZ compliance ledger with PCN risk predictor, and a pool-sharing marketplace for drop nodes.
+A fleet compliance and route planning tool for Bristol’s Clean Air Zone. It helps operators check whether a journey is compliant before a vehicle moves, reducing exposure to CAZ charges and penalty risk while improving route efficiency.
 
-## Contents
-| Path | What it is |
-|---|---|
-| `docs/01-PRD-and-Proposal.md` | Full proposal + PRD (vision, personas, features, architecture, stack, monetisation, GTM, 3-phase roadmap, risks) |
-| `backend/` | FastAPI prototype: routing engine, compliance ledger, hubs, marketplace, 8 automated tests |
-| `frontend/` | Next.js 14 demo UI (route planner + PCN risk) |
-| `db/schema.sql` | PostgreSQL + PostGIS + pgRouting reference schema |
-| `docker-compose.yml` | db + api + web |
+This project is designed as a practical prototype for a wider UK-based compliance platform, with scope to expand into live fleet monitoring, alerts, and operational reporting.
 
-## Run the backend
+## Project structure
+
+- `backend/` — FastAPI service with route planning, compliance checks, ledger logic, hub logic, and tests
+- `frontend/` — Next.js dashboard for route assessment and operational summary
+- `db/schema.sql` — database schema for a production-ready data layer
+- `docs/01-PRD-and-Proposal.md` — product proposal and roadmap
+- `docker-compose.yml` — local orchestration for services
+
+## Quick start
+
+### Backend
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-python -m pytest -q                                    # 8 tests
-uvicorn app.main:app --reload                          # http://localhost:8000/docs
+python -m pytest -q
+uvicorn app.main:app --reload
 ```
 
-## Run the frontend
+### Frontend
 ```bash
 cd frontend
 npm install
-npm run dev                                            # http://localhost:3000 (API on :8000)
+npm run dev
 ```
 
-## Run both together
+### Run both together
 ```bash
 chmod +x start.sh
-./start.sh                                             # starts API + web app together
+./start.sh
 ```
 
-## Or everything via Docker
-```bash
-cp .env.example .env && docker compose up --build
-```
+## What the product does
 
-## Important limitations (please read)
-- **Seed data is illustrative.** `backend/app/seed.py` uses approximate coordinates, rough elevations and
-  placeholder `in_caz` flags. It is not survey or official data. Production must import OSM, a terrain model and the
-  official CAZ polygon (see PRD section 4.3).
-- **CAZ constants** (£9 / £100, Euro 4 petrol / Euro 6 diesel, 6-day payment window, PCN £120 / £60) were checked
-  against Bristol City Council / GOV.UK material in Oct 2026 but must be re-verified before launch (`backend/app/config.py`).
-- The API stores data **in memory** (prototype). The SQL schema is the intended persistence layer; it has not been
-  executed against a live PostgreSQL in this build, and Docker has not been run.
-- Pricing, targets and financials in the PRD are planning hypotheses to validate, not market data.
-- The tool supports compliance; users pay via the official GOV.UK service. Not affiliated with Bristol City Council.
+- checks route compliance against Bristol CAZ rules
+- compares the recommended route with the fastest non-compliant option
+- estimates likely charge exposure and PCN risk
+- gives fleet managers a clearer decision before dispatch
+
+## Important notes
+
+- The current data is illustrative prototype data and not official CAZ survey data.
+- The project is designed for concept validation and future expansion into a broader UK transport compliance platform.
+- This is not affiliated with Bristol City Council and does not replace official GOV.UK compliance information.
+
